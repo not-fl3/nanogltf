@@ -1,0 +1,31 @@
+[package]
+name = "nanogltf"
+version = "0.1.0"
+authors = ["not-fl3 <not.fl3@gmail.com>"]
+edition = "2021"
+license = "MIT/Apache-2.0"
+description = """
+Nanoserde based gltf parsing library.
+"""
+readme="README.md"
+exclude = ["examples/"]
+keywords = ["graphics", "3D", "gltf"]
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[dependencies]
+nanoserde = "0.1"
+
+[dev-dependencies]
+miniquad = { version = "0.4.0-alpha", features = ["log-impl"] }
+shadermagic = "0.1"
+glam = "0.24"
+dolly = "0.4"
+zune-png = "0.2"
+zune-jpeg = "0.3"
+zune-core = "0.2"
+
+[patch.crates-io]
+miniquad = { path = '../miniquad' }
+shadermagic = { path = '../shadermagic' }
