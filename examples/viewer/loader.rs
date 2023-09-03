@@ -101,7 +101,7 @@ pub fn load_gltf(ctx: &mut miniquad::Context, json: &str) -> Model {
 
         let texture =
             ctx.new_texture_from_rgba8(image.width as u16, image.height as u16, &image.data);
-        ctx.texture_set_wrap(texture, TextureWrap::Repeat);
+        ctx.texture_set_wrap(texture, TextureWrap::Repeat, TextureWrap::Repeat);
         textures.push(texture);
     }
 
@@ -201,19 +201,10 @@ pub fn load_gltf(ctx: &mut miniquad::Context, json: &str) -> Model {
                     ..Default::default()
                 },
             )
-                .unwrap();
-            println!("{}", &shader.metal);
-            // println!("{}", &shader.v330.vertex);
-            // println!("{}", &shader.v330.fragment);
+            .unwrap();
+            let source = shadermagic::choose_appropriate_shader(&shader, &ctx.info());
             let shader = ctx
-                .new_shader(
-                    ShaderSource {
-                        glsl_vertex: Some(&shader.v330.vertex),
-                        glsl_fragment: Some(&shader.v330.fragment),
-                        metal_shader: Some(&shader.metal),
-                    },
-                    shader::meta(),
-                )
+                .new_shader(source, shader::meta())
                 .unwrap_or_else(|e| panic!("Failed to load shader: {}", e));
 
             let pipeline = ctx.new_pipeline_with_params(

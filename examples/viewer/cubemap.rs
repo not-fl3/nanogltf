@@ -28,6 +28,7 @@ impl Cubemap {
                 &[&texture5.data],
             ]),
             TextureParams {
+                kind: TextureKind::CubeMap,
                 width: texture0.width as _,
                 height: texture0.height as _,
                 format: TextureFormat::RGBA8,
@@ -98,16 +99,16 @@ impl Cubemap {
             images: vec![color_img],
         };
 
-        let default_shader = ctx
-            .new_shader(
-                ShaderSource {
-                    glsl_vertex: Some(display_shader::VERTEX),
-                    glsl_fragment: Some(display_shader::FRAGMENT),
-                    metal_shader: Some(display_shader::METAL),
-                },
-                display_shader::meta(),
-            )
-            .unwrap();
+        let source = match ctx.info().backend {
+            Backend::OpenGl => ShaderSource::Glsl {
+                vertex: display_shader::VERTEX,
+                fragment: display_shader::FRAGMENT,
+            },
+            Backend::Metal => ShaderSource::Msl {
+                program: display_shader::METAL,
+            },
+        };
+        let default_shader = ctx.new_shader(source, display_shader::meta()).unwrap();
 
         let display_pipeline = ctx.new_pipeline_with_params(
             &[BufferLayout::default()],

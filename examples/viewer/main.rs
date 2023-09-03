@@ -33,31 +33,6 @@ impl Stage {
             &include_bytes!("skybox/skybox_nz.png")[..],
         ];
 
-        // unsafe {
-        //     let version = gl::glGetString(gl::GL_SHADING_LANGUAGE_VERSION);
-        //     let version = std::ffi::CStr::from_ptr(version as _).to_str().unwrap();
-        //     miniquad::info!("version: {}", version);
-
-        //     pub const GL_NUM_SHADING_LANGUAGE_VERSIONS: u32 = 0x82E9;
-        //     let mut num = 0;
-        //     gl::glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &mut num);
-        //     println!("hello {num}");
-        //     for i in 0..num {
-        //         let version = gl::glGetStringi(gl::GL_SHADING_LANGUAGE_VERSION, i as _);
-        //         let version = std::ffi::CStr::from_ptr(version as _).to_str().unwrap();
-        //         miniquad::info!("version: {}", version);
-        //     }
-
-        //     let mut num = 0;
-        //     gl::glGetIntegerv(gl::GL_NUM_EXTENSIONS, &mut num);
-        //     println!("hello {num}");
-        //     for i in 0..num {
-        //         let version = gl::glGetStringi(gl::GL_EXTENSIONS, i as _);
-        //         let version = std::ffi::CStr::from_ptr(version as _).to_str().unwrap();
-        //         miniquad::info!("version: {}", version);
-        //     }
-        // }
-
         let cubemap = cubemap::Cubemap::new(ctx.as_mut(), skybox);
         ctx.texture_set_min_filter(
             cubemap.texture,

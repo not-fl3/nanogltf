@@ -10,12 +10,6 @@ uniform mat4 Model;
 uniform mat4 ModelInverse;
 uniform mat4 Projection;
 
-mat3 transpose(mat3 m) {
-    return mat3(vec3(m[0].x, m[1].x, m[2].x),
-                vec3(m[0].y, m[1].y, m[2].y),
-                vec3(m[0].z, m[1].z, m[2].z));
-}
-
 void main() {
     gl_Position = Projection * Model * vec4(in_position, 1);
     out_uv = in_uv;

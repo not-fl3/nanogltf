@@ -27,5 +27,5 @@ zune-jpeg = "0.3"
 zune-core = "0.2"
 
 [patch.crates-io]
-miniquad = { path = '../miniquad' }
-shadermagic = { path = '../shadermagic' }
+#miniquad = { path = '../miniquad' }
+#shadermagic = { path = '../shadermagic' }

@@ -28,11 +28,6 @@ vec3 extractNormal(vec2 uv, vec3 pos, vec3 normal, vec3 rgb) {
     ng = normalize(normal);
     t = normalize(t_ - ng * dot(ng, t_));
     b = cross(ng, t);
-    //if (gl_FrontFacing == false) {
-    //    t *= -1.0;
-    //    b *= -1.0;
-    //    ng *= -1.0;
-    //}
     vec3 res = rgb * 2.0 - vec3(1.0);
     res = normalize(res);
     res = normalize(mat3(t, b, ng) * res);

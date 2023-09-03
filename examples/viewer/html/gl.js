@@ -77,8 +77,12 @@ function acquireDisjointTimerQueryExtension(ctx) {
     }
 }
 
-gl.getExtension("EXT_shader_texture_lod");
-gl.getExtension("OES_standard_derivatives");
+try {
+    gl.getExtension("EXT_shader_texture_lod");
+    gl.getExtension("OES_standard_derivatives");
+} catch (e) {
+    console.warn(e);
+}
 
 acquireVertexArrayObjectExtension(gl);
 acquireInstancedArraysExtension(gl);

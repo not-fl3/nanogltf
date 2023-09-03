@@ -14,10 +14,6 @@ fn debug_trim_string(uri: &str) -> String {
 }
 
 #[derive(DeJson, PartialEq, Debug)]
-#[nserde(transparent)]
-pub struct GlU32(u32);
-
-#[derive(DeJson, PartialEq, Debug)]
 pub struct Gltf {
     #[nserde(default)]
     pub accessors: Vec<Accessor>,
@@ -42,13 +38,27 @@ pub struct Gltf {
 
 #[derive(Debug, PartialEq)]
 pub enum ComponentType {
-    Byte = 5120,
-    UnsignedByte = 5121,
-    Short = 5122,
-    UnsignedShort = 5123,
-    UnsignedInt = 5125,
-    Float = 5126,
+    Byte,
+    UnsignedByte,
+    Short,
+    UnsignedShort,
+    UnsignedInt,
+    Float,
 }
+impl From<&u32> for ComponentType {
+    fn from(n: &u32) -> ComponentType {
+        match *n {
+            5120 => ComponentType::Byte,
+            5121 => ComponentType::UnsignedByte,
+            5122 => ComponentType::Short,
+            5123 => ComponentType::UnsignedShort,
+            5125 => ComponentType::UnsignedInt,
+            5126 => ComponentType::Float,
+            x => panic!("Not a ComponentType u32!: {x}"),
+        }
+    }
+}
+
 impl ComponentType {
     pub fn byte_size(&self) -> usize {
         use ComponentType::*;
@@ -62,20 +72,6 @@ impl ComponentType {
     }
 }
 
-impl From<&GlU32> for ComponentType {
-    fn from(n: &GlU32) -> ComponentType {
-        match n.0 as u32 {
-            x if x == ComponentType::Byte as u32 => ComponentType::Byte,
-            x if x == ComponentType::UnsignedByte as u32 => ComponentType::UnsignedByte,
-            x if x == ComponentType::Short as u32 => ComponentType::Short,
-            x if x == ComponentType::UnsignedShort as u32 => ComponentType::UnsignedShort,
-            x if x == ComponentType::UnsignedInt as u32 => ComponentType::UnsignedInt,
-            x if x == ComponentType::Float as u32 => ComponentType::Float,
-            x => panic!("Not a ComponentType u32!: {x}"),
-        }
-    }
-}
-
 #[derive(DeJson, PartialEq, Debug)]
 pub struct Accessor {
     #[nserde(rename = "bufferView")]
@@ -84,7 +80,7 @@ pub struct Accessor {
     #[nserde(default = 0)]
     pub byte_offset: usize,
     #[nserde(rename = "componentType")]
-    #[nserde(proxy = "GlU32")]
+    #[nserde(proxy = "u32")]
     pub component_type: ComponentType,
     #[nserde(default = "false")]
     pub normalized: bool,
@@ -148,9 +144,19 @@ impl fmt::Debug for Buffer {
     }
 }
 
+#[derive(PartialEq, Debug)]
 pub enum BufferViewTarget {
-    ArrayBuffer = 34962,
-    ElementArrayBuffer = 34963,
+    ArrayBuffer,
+    ElementArrayBuffer,
+}
+impl From<&u32> for BufferViewTarget {
+    fn from(n: &u32) -> BufferViewTarget {
+        match *n {
+            34962 => BufferViewTarget::ArrayBuffer,
+            34963 => BufferViewTarget::ElementArrayBuffer,
+            x => panic!("Not a BufferViewTarget u32! {x}"),
+        }
+    }
 }
 
 #[derive(DeJson, PartialEq, Debug)]
@@ -162,7 +168,8 @@ pub struct BufferView {
     #[nserde(rename = "byteLength")]
     pub byte_length: usize,
     pub stride: Option<usize>,
-    pub target: Option<u32>,
+    #[nserde(proxy = "u32")]
+    pub target: Option<BufferViewTarget>,
     pub name: Option<String>,
 }
 
@@ -263,7 +270,7 @@ pub struct Material {
     pub emissive_factor: [f64; 3],
     #[nserde(rename = "alphaMode")]
     #[nserde(default)]
-    pub alpha_mode: u32,
+    pub alpha_mode: String,
     #[nserde(rename = "alphaCutoff")]
     #[nserde(default = "0.5")]
     pub alpha_cutoff: f64,
@@ -283,22 +290,36 @@ pub struct Mesh {
 #[derive(Debug, PartialEq)]
 #[repr(u32)]
 pub enum PrimitiveMode {
-    Points = 0,
-    Lines = 1,
-    LineLoop = 2,
-    LineStrip = 3,
-    Triangles = 4,
-    TriangleStrip = 5,
-    TriangleFan = 6,
+    Points,
+    Lines,
+    LineLoop,
+    LineStrip,
+    Triangles,
+    TriangleStrip,
+    TriangleFan,
 }
-
+impl From<&u32> for PrimitiveMode {
+    fn from(n: &u32) -> PrimitiveMode {
+        match *n {
+            0 => PrimitiveMode::Points,
+            1 => PrimitiveMode::Lines,
+            2 => PrimitiveMode::LineLoop,
+            3 => PrimitiveMode::LineStrip,
+            4 => PrimitiveMode::Triangles,
+            5 => PrimitiveMode::TriangleStrip,
+            6 => PrimitiveMode::TriangleFan,
+            x => panic!("Not a PrimitiveMode u32! {x}"),
+        }
+    }
+}
 #[derive(DeJson, PartialEq, Debug)]
 pub struct Primitive {
     #[nserde(default)]
     pub attributes: HashMap<String, usize>,
     pub indices: Option<usize>,
     pub material: Option<usize>,
-    pub mode: Option<u32>,
+    #[nserde(proxy = "u32")]
+    pub mode: Option<PrimitiveMode>,
     pub targets: Option<HashMap<String, usize>>,
 }
 
@@ -317,7 +338,7 @@ pub struct Node {
     pub name: Option<String>,
 }
 
-#[repr(u32)]
+#[derive(Debug, PartialEq)]
 pub enum Filter {
     Nearest = 9728,
     Linear = 9729,
@@ -326,24 +347,51 @@ pub enum Filter {
     NearestMipmapLinear = 9986,
     LinearMipmapLinear = 9987,
 }
+impl From<&u32> for Filter {
+    fn from(n: &u32) -> Filter {
+        match *n {
+            9728 => Filter::Nearest,
+            9729 => Filter::Linear,
+            9984 => Filter::NearestMimpapNearest,
+            9985 => Filter::LinearMipmapNearest,
+            9986 => Filter::NearestMipmapLinear,
+            9987 => Filter::LinearMipmapLinear,
+            x => panic!("Not a Filter u32! {x}"),
+        }
+    }
+}
 
-#[repr(u32)]
+#[derive(Debug, PartialEq)]
 pub enum WrappingMode {
     ClampToEdge = 33071,
     MirroredRepeat = 33648,
     Repeat = 10497,
 }
+impl From<&u32> for WrappingMode {
+    fn from(n: &u32) -> WrappingMode {
+        match *n {
+            33071 => WrappingMode::ClampToEdge,
+            33648 => WrappingMode::MirroredRepeat,
+            10497 => WrappingMode::Repeat,
+            x => panic!("Not a WrappingMode u32! {x}"),
+        }
+    }
+}
 
 #[derive(DeJson, PartialEq, Debug)]
 pub struct Sampler {
     #[nserde(rename = "magFilter")]
-    pub mag_filter: Option<u32>,
+    #[nserde(proxy = "u32")]
+    pub mag_filter: Option<Filter>,
     #[nserde(rename = "minFilter")]
-    pub min_filter: Option<u32>,
+    #[nserde(proxy = "u32")]
+    pub min_filter: Option<Filter>,
     #[nserde(rename = "wrapS")]
-    pub wrap_s: Option<u32>,
+    #[nserde(proxy = "u32")]
+    pub wrap_s: Option<WrappingMode>,
+    #[nserde(proxy = "u32")]
     #[nserde(rename = "wrapT")]
-    pub wrap_t: Option<u32>,
+    pub wrap_t: Option<WrappingMode>,
     pub name: Option<String>,
 }
 
