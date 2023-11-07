@@ -95,6 +95,7 @@ pub fn load_gltf(ctx: &mut miniquad::Context, json: &str) -> Model {
                 offset,
                 length,
             } => &buffers[buffer][offset..offset + length],
+            _ => panic!(),
         };
         let image = crate::image::decode(&bytes).unwrap();
         //let image = image::load_from_memory(bytes).unwrap().to_rgba8();

@@ -12,7 +12,7 @@ pub fn decode(bytes: &[u8]) -> Option<RGBA8Buffer> {
         use zune_jpeg::JpegDecoder;
 
         let options = DecoderOptions::default().jpeg_set_out_colorspace(ColorSpace::RGBA);
-        let mut decoder = JpegDecoder::new_with_options(options, bytes);
+        let mut decoder = JpegDecoder::new_with_options(bytes, options);
         decoder.decode_headers().ok()?;
         let info = decoder.info()?;
         let pixels = decoder.decode().ok()?;

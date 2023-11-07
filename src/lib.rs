@@ -57,6 +57,7 @@ pub mod utils {
             offset: usize,
             length: usize,
         },
+        RelativePath(String),
     }
 
     /// Get (buffer index, offset in the buffer, amount of bytes) from the view/accessor for the given attribute.
@@ -95,7 +96,7 @@ pub mod utils {
             let uri = parse_uri(image.uri.as_ref().unwrap());
             match uri {
                 UriData::Bytes(view) => ImageSource::Bytes(view),
-                _ => unimplemented!(),
+                UriData::RelativePath(uri) => ImageSource::RelativePath(uri),
             }
         } else {
             let view = image.buffer_view.unwrap();
